@@ -1,2 +1,9 @@
+# 📄 FICHIERS DE DOCUMENTATION ET PLANNING (à exclure du versioning)
 PROJECT_PLAN.txt
 JOURNAL_DE_BORD.txt
+
+# 🎯 SCALA/SBT - Fichiers de build et target
+target/
+project/target/
+project/project/
+.bsp/
