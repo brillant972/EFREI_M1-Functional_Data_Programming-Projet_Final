@@ -4,7 +4,7 @@
 
 Projet d'analyse de données des restaurants Uber Eats aux États-Unis utilisant l'architecture médaillon (Bronze/Silver/Gold) avec Apache Spark et Scala.
 
-**Jeu de données** : 63k+ restaurants + 5M+ items de menu (données réelles Kaggle) : https://www.kaggle.com/datasets/ahmedshahriarsakib/uber-eats-usa-restaurants-menus/data?select=restaurant-menus.csv
+**Jeu de données** : 63k+ restaurants + 5M+ items de menu (données réelles Kaggle) : [Datasets Kaggle]([URL](https://www.kaggle.com/datasets/ahmedshahriarsakib/uber-eats-usa-restaurants-menus/data?select=restaurant-menus.csv)) 
 **Stack technique** : Scala 2.13 + Spark 3.5 + PostgreSQL + SBT  
 **Architecture** : Lakehouse médaillon + paradigmes de programmation fonctionnelle
 
@@ -207,4 +207,4 @@ ls src/data/bronze/ src/data/silver/ src/data/gold/
 
 ---
 
-**EFREI M1 - Programmation Fonctionnelle de Données - 2025**
+**EFREI M1 - Fuunctional Data Programming - 2025**
