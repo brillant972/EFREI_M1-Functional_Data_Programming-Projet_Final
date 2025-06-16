@@ -337,9 +337,8 @@ def main():
     # Étape 1: Setup database et tables
     if not setup_database():
         logger.error("❌ Échec du setup de la database")
-        return
-      # Étape 2: Charger les restaurant IDs
-    csv_path = os.path.join(os.path.dirname(__file__), '..', '..', 'restaurants.csv')
+        return    # Étape 2: Charger les restaurant IDs
+    csv_path = os.path.join(os.path.dirname(__file__), '..', 'restaurants.csv')
     restaurant_ids = load_restaurant_ids(csv_path, args.sample)
     
     if not restaurant_ids:

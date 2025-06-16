@@ -1,8 +1,13 @@
-# 📄 FICHIERS DE DOCUMENTATION ET PLANNING (à exclure du versioning)
+# FICHIERS DE DOCUMENTATION ET PLANNING
 PROJECT_PLAN.txt
 JOURNAL_DE_BORD.txt
 
-# 🎯 SCALA/SBT - Fichiers de build et target
+# Fichers CSV de données  - Téléchargés depuis Kaggle
+# Ces fichiers sont des données brutes et ne doivent pas être suivis par Git car ils sont trop volumineux 
+restaurants.csv
+restaurant-menus.csv
+
+# SCALA/SBT - Fichiers de build et target
 target/
 project/target/
 project/project/

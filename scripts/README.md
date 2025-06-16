@@ -14,7 +14,7 @@ Ce dossier contient les scripts pour alimenter automatiquement PostgreSQL avec d
    - `psycopg2-binary==2.9.9` 
    - `Faker==18.13.0`
 
-3. **Fichiers CSV** : `restaurants.csv` et `restaurant-menus.csv` dans le répertoire parent
+3. **Fichiers CSV** : `restaurants.csv` et `restaurant-menus.csv` à la racine du projet
 
 ## **Utilisation**
 
@@ -75,4 +75,22 @@ python data_generator.py --sample 10 --validate
 - Les données sont générées de manière cohérente avec les restaurant_id existants
 - Chaque exécution nettoie et recrée les données pour éviter les doublons
 - Compatible avec les paradigmes fonctionnels Scala pour le pipeline principal
+
+## 📁 **Structure attendue du projet**
+
+```
+EFREI_M1-Functional_Data_Programming-Projet_Final/
+├── restaurants.csv                    # ⬅️ À la racine !
+├── restaurant-menus.csv               # ⬅️ À la racine !
+├── scripts/
+│   ├── data_generator.py             # Script à exécuter
+│   ├── requirements.txt
+│   └── README.md                     # Ce fichier
+└── src/data/
+    ├── bronze/                       # Données générées ici
+    ├── silver/
+    └── gold/
+```
+
+**⚠️ Important** : Les fichiers CSV doivent être à la racine du projet pour que le script les trouve automatiquement.
 
