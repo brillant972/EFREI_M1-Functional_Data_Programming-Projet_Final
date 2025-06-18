@@ -11,7 +11,7 @@ cd EFREI_M1-Functional_Data_Programming-Projet_Final
 ### 2. Allimentation BDD PostgreSQL 
 ```bash
 # Installer les dépendances Python
-pip install -r requirements.txt
+pip install -r scripts/requirements.txt
 
 # Générer les données PostgreSQL (100 restaurants pour test)
 python scripts/data_generator.py --sample 100 --validate
