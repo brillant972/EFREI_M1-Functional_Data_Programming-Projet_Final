@@ -1,3 +1,5 @@
+package utils
+
 import org.apache.spark.sql.{DataFrame, SaveMode}
 import com.typesafe.scalalogging.LazyLogging
 
