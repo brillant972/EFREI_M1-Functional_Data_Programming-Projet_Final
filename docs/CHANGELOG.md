@@ -81,7 +81,7 @@ et ce projet adhère au [Versioning Sémantique](https://semver.org/spec/v2.0.0.
 ### Configuration
 - **Workflow Git** avec branches feature
 - **Conteneur PostgreSQL** local-postgres configuré
-- **Jeu de données Kaggle** Uber Eats téléchargé et analysé
+- **Jeu de données Kaggle** Uber Eats téléchargé et analysé 
 
 ---
 

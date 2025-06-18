@@ -1,26 +1,22 @@
 package layers
 
 import org.apache.spark.sql.SparkSession
-import com.typesafe.scalalogging.LazyLogging
 import utils.{Reader, Writer}
 
 /**
  * Couche Bronze - Ingestion des données brutes
  */
-object BronzeLayer extends LazyLogging {
+object BronzeLayer {
 
   /**
    * Exécution de la couche Bronze
    */
   def run()(implicit spark: SparkSession): Boolean = {
-    logger.info("Démarrage couche Bronze")
+    println("🥉 Démarrage couche Bronze")
 
     val sources = List(
       ("restaurants.csv", "src/data/bronze/restaurants", "CSV"),
       ("restaurant-menus.csv", "src/data/bronze/menus", "CSV")
-      // Ajouter PostgreSQL plus tard
-      // ("restaurant_ratings_history", "src/data/bronze/ratings", "POSTGRES"),
-      // ("delivery_performance", "src/data/bronze/delivery", "POSTGRES")
     )
 
     val results = sources.map { case (source, output, sourceType) =>
@@ -28,12 +24,9 @@ object BronzeLayer extends LazyLogging {
     }
 
     val success = results.forall(identity)
-    
-    if (success) {
-      logger.info("[OK] Couche Bronze terminée")
-    } else {
-      logger.error("[NOK] Échec couche Bronze")
-    }
+
+    if (success) println("✅ Couche Bronze terminée")
+    else println("❌ Échec couche Bronze")
 
     success
   }
@@ -42,10 +35,9 @@ object BronzeLayer extends LazyLogging {
    * Traitement générique d'une source de données
    */
   private def processSource(source: String, output: String, sourceType: String)(implicit spark: SparkSession): Boolean = {
-    logger.info(s"Ingestion: $source")
+    println(s"📖 Ingestion: $source")
 
     try {
-      // Lecture selon le type de source
       val df = sourceType match {
         case "CSV" => Reader.sourceFromCsv(source)
         case "POSTGRES" => Reader.sourceFromPostgreSQL(source)
@@ -53,24 +45,19 @@ object BronzeLayer extends LazyLogging {
       }
 
       df.cache()
-      
-      // Stats simples
-      val count = df.count()
-      logger.info(s"📊 $source: $count lignes")      // Écriture Parquet
+      println(s"📊 $source: ${df.count()} lignes")
+
       val success = Writer.writeToParquet(df, output)
-      
-      if (success) {
-        logger.info(s"[OK] $source → $output")
-      } else {
-        logger.error(s"[NOK] Échec écriture $source")
-      }
+
+      if (success) println(s"✅ $source → $output")
+      else println(s"❌ Échec écriture $source")
 
       df.unpersist()
       success
 
     } catch {
       case e: Exception =>
-        logger.error(s"[NOK] Erreur $source: ${e.getMessage}")
+        println(s"❌ Erreur $source: ${e.getMessage}")
         false
     }
   }

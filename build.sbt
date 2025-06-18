@@ -1,34 +1,26 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
-
 ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / version := "0.1.0-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .settings(
     name := "uber-eats-restaurant-analysis",
     organization := "com.efrei.functional",
-    
-    // Dépendances principales
+
+    Compile / mainClass := Some("com.efrei.functional.RestaurantAnalysisApp"),
+
     libraryDependencies ++= Seq(
-      // Apache Spark
-      "org.apache.spark" %% "spark-core" % "3.5.0" % "provided",
-      "org.apache.spark" %% "spark-sql" % "3.5.0" % "provided",
-      
-      // PostgreSQL Driver
+      "org.apache.spark" %% "spark-core" % "3.5.0",
+      "org.apache.spark" %% "spark-sql" % "3.5.0",
+      "org.apache.spark" %% "spark-hive" % "3.5.0",
       "org.postgresql" % "postgresql" % "42.7.1",
-      
-      // Configuration
+      "org.apache.logging.log4j" % "log4j-core" % "2.20.0",
+      "org.apache.logging.log4j" % "log4j-api" % "2.20.0",
+      "org.apache.logging.log4j" % "log4j-slf4j2-impl" % "2.20.0",
       "com.typesafe" % "config" % "1.4.3",
-      
-      // Logging
-      "ch.qos.logback" % "logback-classic" % "1.4.14",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
-      
-      // Tests
       "org.scalatest" %% "scalatest" % "3.2.17" % Test,
       "org.scalatestplus" %% "mockito-4-11" % "3.2.17.0" % Test
     ),
-    
-    // Options du compilateur Scala
+
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
@@ -38,11 +30,16 @@ lazy val root = (project in file("."))
       "-Ywarn-numeric-widen",
       "-Ywarn-value-discard"
     ),
-    
-    // Paramètres JVM pour l'exécution
+
     fork := true,
+    Compile / run / fork := true,
+
     javaOptions ++= Seq(
-      "-Xmx2g",
+      "-Xmx4g",
       "-XX:+UseG1GC"
+    ),
+
+    Compile / run / javaOptions ++= Seq(
+      s"-Dlog4j.configurationFile=${baseDirectory.value}/src/main/resources/log4j2.properties"
     )
   )
