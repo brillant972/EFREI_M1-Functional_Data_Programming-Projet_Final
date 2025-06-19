@@ -6,6 +6,8 @@ JOURNAL_DE_BORD.txt
 # Ces fichiers sont des données brutes et ne doivent pas être suivis par Git car ils sont trop volumineux 
 restaurants.csv
 restaurant-menus.csv
+.parquet
+.crc
 
 # SCALA/SBT - Fichiers de build et target
 target/
@@ -13,4 +15,9 @@ project/target/
 project/project/
 .bsp/
 project/
-metastore_db/
+.metastore_db/
+
+src/data/bronze/menus
+src/data/bronze/restaurants
+
+spark-warehouse/
