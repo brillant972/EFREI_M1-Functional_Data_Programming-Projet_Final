@@ -1,4 +1,4 @@
-package com.efrei.functional
+package layers
 
 import org.apache.spark.sql.{SparkSession, DataFrame}
 import java.io.File
@@ -23,7 +23,7 @@ object CleanAllToHive {
 
     folders.foreach { folderName =>
       val inputPath = s"$bronzeBasePath/$folderName"
-      val tableNameWithDate = s"${folderName}_$today"
+      val tableNameWithDate = s"${folderName}"
 
       try {
         val df = spark.read

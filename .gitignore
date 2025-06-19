@@ -12,5 +12,5 @@ target/
 project/target/
 project/project/
 .bsp/
-project/
-metastore_db/
+.project/
+.metastore_db/
