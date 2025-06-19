@@ -2,13 +2,33 @@
 PROJECT_PLAN.txt
 JOURNAL_DE_BORD.txt
 
-# Fichers CSV de données  - Téléchargés depuis Kaggle
+# Fichiers CSV de données - Téléchargés depuis Kaggle
 # Ces fichiers sont des données brutes et ne doivent pas être suivis par Git car ils sont trop volumineux 
 restaurants.csv
 restaurant-menus.csv
+
+# Données de sortie - Fichiers Parquet, JSON, etc.
+src/data/bronze/
+src/data/silver/
+src/data/gold/
+*.parquet
+*.snappy.parquet
+
+# Répertoires temporaires Spark
+spark-warehouse/
+metastore_db/
 
 # SCALA/SBT - Fichiers de build et target
 target/
 project/target/
 project/project/
 .bsp/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.iml

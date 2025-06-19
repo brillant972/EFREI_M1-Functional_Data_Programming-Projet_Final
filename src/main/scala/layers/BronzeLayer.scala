@@ -1,77 +1,113 @@
 package layers
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
+import utils.{Reader, Writer, ConfigManager}
 import com.typesafe.scalalogging.LazyLogging
-import utils.{Reader, Writer}
 
 /**
  * Couche Bronze - Ingestion des données brutes
+ * Lecture depuis CSV et PostgreSQL, écriture en Parquet
  */
 object BronzeLayer extends LazyLogging {
-
   /**
-   * Exécution de la couche Bronze
+   * Extraction des restaurants depuis CSV
    */
-  def run()(implicit spark: SparkSession): Boolean = {
-    logger.info("Démarrage couche Bronze")
-
-    val sources = List(
-      ("restaurants.csv", "src/data/bronze/restaurants", "CSV"),
-      ("restaurant-menus.csv", "src/data/bronze/menus", "CSV")
-      // Ajouter PostgreSQL plus tard
-      // ("restaurant_ratings_history", "src/data/bronze/ratings", "POSTGRES"),
-      // ("delivery_performance", "src/data/bronze/delivery", "POSTGRES")
-    )
-
-    val results = sources.map { case (source, output, sourceType) =>
-      processSource(source, output, sourceType)
-    }
-
-    val success = results.forall(identity)
-    
-    if (success) {
-      logger.info("[OK] Couche Bronze terminée")
-    } else {
-      logger.error("[NOK] Échec couche Bronze")
-    }
-
-    success
+  def extractRestaurantsFromCSV(spark: SparkSession): DataFrame = {
+    implicit val sparkSession: SparkSession = spark
+    logger.info("🍽️ Extraction des restaurants depuis CSV")
+    val df = Reader.sourceFromCsv(ConfigManager.restaurantsCsvPath)
+    logger.info(s"✅ ${df.count()} restaurants extraits")
+    df
   }
 
   /**
-   * Traitement générique d'une source de données
+   * Extraction des menus depuis CSV
    */
-  private def processSource(source: String, output: String, sourceType: String)(implicit spark: SparkSession): Boolean = {
-    logger.info(s"Ingestion: $source")
+  def extractMenusFromCSV(spark: SparkSession): DataFrame = {
+    implicit val sparkSession: SparkSession = spark
+    logger.info("📋 Extraction des menus depuis CSV")
+    val df = Reader.sourceFromCsv(ConfigManager.menusCsvPath)
+    logger.info(s"✅ ${df.count()} items de menu extraits")
+    df
+  }
 
+  /**
+   * Extraction des données temporelles depuis PostgreSQL
+   */
+  def extractRatingsFromPostgreSQL(spark: SparkSession): DataFrame = {
+    implicit val sparkSession: SparkSession = spark
+    logger.info("📊 Extraction historique ratings depuis PostgreSQL")
+    val df = Reader.sourceFromPostgreSQL(ConfigManager.ratingsHistoryTable)
+    logger.info(s"✅ ${df.count()} enregistrements ratings extraits")
+    df
+  }
+
+  def extractDeliveryFromPostgreSQL(spark: SparkSession): DataFrame = {
+    implicit val sparkSession: SparkSession = spark
+    logger.info("🚚 Extraction performance delivery depuis PostgreSQL")
+    val df = Reader.sourceFromPostgreSQL(ConfigManager.deliveryPerformanceTable)
+    logger.info(s"✅ ${df.count()} enregistrements delivery extraits")
+    df
+  }
+
+  def extractCampaignsFromPostgreSQL(spark: SparkSession): DataFrame = {
+    implicit val sparkSession: SparkSession = spark
+    logger.info("📢 Extraction campagnes promotionnelles depuis PostgreSQL")
+    val df = Reader.sourceFromPostgreSQL(ConfigManager.promotionalCampaignsTable)
+    logger.info(s"✅ ${df.count()} campagnes extraites")
+    df
+  }
+
+  /**
+   * Écriture en format Parquet dans la couche Bronze
+   */
+  def writeToParquet(df: DataFrame, tableName: String): Unit = {
+    val outputPath = s"${ConfigManager.bronzePath}/$tableName/"
+    logger.info(s"💾 Écriture $tableName vers $outputPath")
+    
+    val success = Writer.writeToParquet(df, outputPath)
+    if (success) {
+      logger.info(s"✅ $tableName écrit avec succès en Bronze")
+    } else {
+      logger.error(s"❌ Échec écriture $tableName en Bronze")
+    }
+  }
+
+  /**
+   * Pipeline complet de la couche Bronze
+   */
+  def run(spark: SparkSession): Unit = {
+    logger.info("🥉 === DÉBUT COUCHE BRONZE ===")
+    
     try {
-      // Lecture selon le type de source
-      val df = sourceType match {
-        case "CSV" => Reader.sourceFromCsv(source)
-        case "POSTGRES" => Reader.sourceFromPostgreSQL(source)
-        case _ => throw new IllegalArgumentException(s"Type de source non supporté: $sourceType")
-      }
-
-      df.cache()
+      // ==============================
+      //  EXTRACT depuis CSV
+      // ==============================
+      val restaurantsDF = extractRestaurantsFromCSV(spark)
+      val menusDF = extractMenusFromCSV(spark)
       
-      // Stats simples
-      val count = df.count()
-      logger.info(s"📊 $source: $count lignes")      // Écriture Parquet
-      val success = Writer.writeToParquet(df, output)
+      // ==============================
+      //  EXTRACT depuis PostgreSQL
+      // ==============================
+      val ratingsDF = extractRatingsFromPostgreSQL(spark)
+      val deliveryDF = extractDeliveryFromPostgreSQL(spark)
+      val campaignsDF = extractCampaignsFromPostgreSQL(spark)
       
-      if (success) {
-        logger.info(s"[OK] $source → $output")
-      } else {
-        logger.error(s"[NOK] Échec écriture $source")
-      }
-
-      df.unpersist()
-      success
-
+      // ==============================
+      //  LOAD vers Bronze (Parquet)
+      // ==============================
+      writeToParquet(restaurantsDF, "restaurants")
+      writeToParquet(menusDF, "menu_items")
+      writeToParquet(ratingsDF, "ratings_history")
+      writeToParquet(deliveryDF, "delivery_performance")
+      writeToParquet(campaignsDF, "promotional_campaigns")
+      
+      logger.info("🥉 === COUCHE BRONZE TERMINÉE AVEC SUCCÈS ===")
+      
     } catch {
       case e: Exception =>
-        logger.error(s"[NOK] Erreur $source: ${e.getMessage}")
-        false
+        logger.error(s"❌ Erreur dans la couche Bronze: ${e.getMessage}")
+        throw e
     }
   }
 }

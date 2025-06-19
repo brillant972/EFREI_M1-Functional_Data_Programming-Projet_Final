@@ -6,9 +6,7 @@ import com.typesafe.config.{Config, ConfigFactory}
  * Gestionnaire de configuration simplifié
  * Lit les paramètres essentiels depuis application.conf
  */
-object ConfigManager {
-
-  private val config: Config = ConfigFactory.load()
+object ConfigManager {  private val config: Config = ConfigFactory.load()
 
   // Sources de données
   lazy val restaurantsCsvPath: String = config.getString("data.sources.restaurants")
